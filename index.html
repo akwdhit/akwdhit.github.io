@@ -1,7 +1,28 @@
 <html>
 <head>
+<style>
+#footer {
+align: center
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+
+// aVon https://stackoverflow.com/questions/26104378/jquery-mailto-with-anchor-element
+$(function () {
+  $('#email_me').on('click', function (event) {
+      event.preventDefault();
+    var email = 'adhityo.k.w@gmail.com';
+    var subject = 'Web Visit';
+    var emailBody = 'Hi there!';
+    window.location = 'mailto:' + email + '?subject=' + subject + '&body=' +   emailBody;
+  });
+});
+
+</script>
 </head>
 <body>
 AKW
+<div id="footer">Copyright <a id="email_me">AKW</a> <script>document.write(getFullYear());</script></div>
 </body>
 </html>
