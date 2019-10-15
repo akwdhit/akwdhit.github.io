@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<title>Test</title>
+        <script src="script/kmt/pkg/jquery.3-4-1.slim.min.js"></script>
+		<script>
+			var MAX_TOTAL_INPUT = 10;
+		
+			function addNewInputField(i, placeholder) {
+				$("#input_fields").append('<input type="texbox" id="input_field_' + i + '" placeholder="' + placeholder + '"></input><br  id="br_field_' + i + '" />')
+			}
+			
+			function generateTotalInput(defaultIndex) {
+				if (defaultIndex <= 0) {
+					defaultIndex = 1
+				}
+			
+				for (i = 2; i <=MAX_TOTAL_INPUT; i++) {
+					$("#total_inputs").append('<option id="total_input_' + i + '" value="' + i + '">' + i + '</option>')
+				}
+				
+				$("#total_inputs").val(defaultIndex);
+			}
+			
+			$(document).ready(function(){ 
+				var placeholder = "Input current balance here"
+				
+				// AKW - Generate select input
+				generateTotalInput(2)
+				
+				// AKW - Define the default fields
+				addNewInputField(1, placeholder)
+				addNewInputField(2, placeholder)
+			})
+			
+			// AKW - A method to automatically show additional input fields based on the select field user choose
+			function show_input_fields(selectField) {
+				// AKW - Define the variables here
+				var total_input = selectField.value
+				var placeholder = "Input current balance here"
+				
+				// AKW - Start from 1, add if it is still less than the expected number
+				for (i = 1; i <= total_input; i++) {
+					if ($("#input_field_" + i).length <= 0) {
+						addNewInputField(i, placeholder);
+					}
+				}
+				
+				// AKW - If there were more than expected number, remove them
+				if (total_input < MAX_TOTAL_INPUT) {
+					debug(total_input + " - "  + MAX_TOTAL_INPUT)
+					
+					for (i = (+total_input + +1); i <= MAX_TOTAL_INPUT; i++) {
+						debug(i)
+						
+						if ($("#input_field_" + i).length > 0) {
+							$("#input_field_" + i).remove()
+							$("#br_field_" + i).remove()
+						}
+					}
+				}
+			}
+			
+			function debug(msg) {
+				if ($("#debug").length == 0) {
+					alert("Can't debug, the debug placeholder does not exist. Message: " + msg)
+				}
+							
+				$("#debug").append(msg)
+			}
+		</script>
+	</head>
+	
+	<body>
+		<select id="total_inputs" onchange="show_input_fields(this)">
+			<option id="total_input_1" value="1">1</option>
+		</select>
+		<div id="input_fields">
+		</div>
+		<div id="debug">
+		</div>
+	</body>
+</html>
