@@ -3,7 +3,7 @@ var KMTDeliveryLoadedLibraries = {}
 
 $(document).ready(function () {
     // AKW - List the script name here
-    var baseURL = 'https://akwdhit.github.io'
+    var baseURL = 'https://akwdhit.github.io/'
     scripts = [baseURL + "script/kmt/pkg/kmt.js"]
 
     // AKW - Load each script

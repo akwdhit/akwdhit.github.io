@@ -1,5 +1,5 @@
 //https://stackoverflow.com/questions/21294/dynamically-load-a-javascript-file/21297#21297
-var baseURL = 'https://akwdhit.github.io'
+var baseURL = 'https://akwdhit.github.io/'
 function loadScript(urls, callback)
 {
     for (i = 0; i < urls.length; i++) {
