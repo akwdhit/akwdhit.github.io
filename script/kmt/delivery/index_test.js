@@ -15,6 +15,7 @@ if (bodyEl != null) {
 }
 */
 //https://stackoverflow.com/questions/21294/dynamically-load-a-javascript-file/21297#21297
+var baseURL = 'https://akwdhit.github.io'
 function loadScript(urls, callback)
 {
     for (i = 0; i < urls.length; i++) {
@@ -81,7 +82,7 @@ var myPrettyCode = function() {
     }
     print(msg)
  };
-loadScript(['script/kmt/internal/const.js', 'script/kmt/internal/internal.js', 'script/kmt/pkg/kmt.js'], myPrettyCode);
+loadScript([baseURL + 'script/kmt/internal/const.js', baseURL + 'script/kmt/internal/internal.js', baseURL + 'script/kmt/pkg/kmt.js'], myPrettyCode);
 
 function print(msg) {
     console.log(msg)
