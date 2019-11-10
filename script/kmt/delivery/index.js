@@ -22,3 +22,8 @@ function loadScript(urls, callback)
     }
 }
 loadScript([baseURL + 'script/kmt/internal/const.js', baseURL + 'script/kmt/internal/internal.js', baseURL + 'script/kmt/pkg/kmt.js'], calculate);
+
+// aCallback method
+function calculate() {
+    // aDo nothing at the moment, it is just a callback
+}
