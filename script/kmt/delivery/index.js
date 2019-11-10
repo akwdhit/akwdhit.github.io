@@ -22,21 +22,3 @@ function loadScript(urls, callback)
     }
 }
 loadScript([baseURL + 'script/kmt/internal/const.js', baseURL + 'script/kmt/internal/internal.js', baseURL + 'script/kmt/pkg/kmt.js'], calculate);
-
-function calculate() {
-    var result
-
-    var expectedValue = 190000
-
-    value = [45000, 59000, 69999, 100000, 200000, 210000, 98000]    // 70%: 45000->160000, 59000->150000, 69999->140000, 
-                                                                    // 100000->110000, 200000->10000, 210000->0, 98000->110000
-    //value = [91000, 38000]                                        // 70%: 110000, 160000
-    //value = [100000, 148200]                                      // 70%: 120000, 70000
-
-    // aGet lowest value
-    result = Math.min.apply(Math, value)
-
-    alert(result)
-
-    alert(JSON.stringify(getSuggestedTopup(expectedValue, value)))
-}
