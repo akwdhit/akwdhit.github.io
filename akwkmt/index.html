@@ -9,8 +9,54 @@
 		<script>
 			var MAX_TOTAL_INPUT = 10;
 		
-			function addNewInputField(i, placeholder) {
-				$("#input_fields").append('<input type="texbox" id="input_field_' + i + '" placeholder="' + placeholder + '"></input><br  id="br_field_' + i + '" />')
+			function addNewInputRow(i, placeholder) {
+				$("#input_fields").append('\
+					<div class="divTableRow" id="input_row_' + i + '">\
+						<div class="divTableCell">' + getNewInputField(i, placeholder) + '</div>\
+						<div class="divTableCell">' + getNewSuggestedTopUpAmount(i, placeholder) + ' </div>\
+					</div>')
+
+					// TODO convert to currency without affecting the result
+					/*
+				// aVon: https://codepen.io/559wade/pen/LRzEjj
+				$('input#input_field_' + i + '').on({
+					keyup: function() {
+						formatCurrency($(this));
+					},
+					blur: function() { 
+						formatCurrency($(this), "blur");
+					}
+				});
+				*/
+
+				$('input#input_field_' + i + '').on({
+					keyup: function() {
+						calculateAll();
+					},
+					blur: function() { 
+						calculateAll();
+					}
+				});
+			}
+
+			function calculateAll() {
+				var totalInputs = $('#total_inputs').val()
+				var arrOfInput = []
+				for (var i = 1; i <= totalInputs; i++) {
+					var currentInput = $('input#input_field_' + i).val();
+					if (currentInput == null) {
+						alert("Error occured on processing input-" + i)
+					} else {
+						arrOfInput.push(currentInput)
+					}
+				}
+
+				$resultInText = getSuggestedTopup("190000", arrOfInput);
+
+				for (var i = 1; i <= totalInputs; i++) {
+					$('#suggested_topup_amt_' + i).text(JSON.stringify($resultInText));
+					$('#suggested_topup_amt_' + i).text($resultInText[$('input#input_field_' + i).val()]);
+				}
 			}
 			
 			function generateTotalInput(defaultIndex) {
@@ -24,6 +70,97 @@
 				
 				$("#total_inputs").val(defaultIndex);
 			}
+
+			// TODO:
+			// Organize all functions
+			var currencySymbol = "Rp"
+			var numberSeparator = "."
+			var decimalSeparator = ","
+			function formatNumber(n) {
+				// format number 1000000 to 1,234,567
+				return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, numberSeparator)
+			}
+
+
+			function formatCurrency(input, blur) {
+				// appends $ to value, validates decimal side
+				// and puts cursor back in right position.
+				
+				// get input value
+				var input_val = input.val();
+				
+				// don't validate empty input
+				if (input_val === "") { return; }
+				
+				// original length
+				var original_len = input_val.length;
+
+				// initial caret position 
+				var caret_pos = input.prop("selectionStart");
+					
+				// check for decimal
+				if (input_val.indexOf(decimalSeparator) >= 0) {
+
+					// get position of first decimal
+					// this prevents multiple decimals from
+					// being entered
+					var decimal_pos = input_val.indexOf(decimalSeparator);
+
+					// split number by decimal point
+					var left_side = input_val.substring(0, decimal_pos);
+					var right_side = input_val.substring(decimal_pos);
+
+					// add commas to left side of number
+					left_side = formatNumber(left_side);
+
+					// validate right side
+					right_side = formatNumber(right_side);
+					
+					// On blur make sure 2 numbers after decimal
+					if (blur === "blur") {
+						right_side += "00";
+					}
+					
+					// Limit decimal to only 2 digits
+					right_side = right_side.substring(0, 2);
+
+					// join number by .
+					input_val = currencySymbol + left_side + decimalSeparator + right_side;
+
+				} else {
+					// no decimal entered
+					// add commas to number
+					// remove all non-digits
+					input_val = formatNumber(input_val);
+					input_val = currencySymbol + input_val;
+					
+					// final formatting
+					if (blur === "blur") {
+						input_val += ".00";
+					}
+				}
+				
+				// send updated string to input
+				input.val(input_val);
+
+				// put caret back in the right position
+				var updated_len = input_val.length;
+				caret_pos = updated_len - original_len + caret_pos;
+				input[0].setSelectionRange(caret_pos, caret_pos);
+			}
+
+			function getNewInputField(i, placeholder) {
+				// TODO:
+				// 1. To make it automatically format the value as a currency
+				// https://codepen.io/559wade/pen/LRzEjj
+				return '<input type="text" id="input_field_' + i + '" placeholder="' + placeholder + '" pattern="^\$\d{1,3}(.\d{3})*(\,\d+)?$" data-type="currency"></input>';
+			}
+
+			function getNewSuggestedTopUpAmount(i, placeholder) {
+				// TODO: 
+				// 1. To make it automatically shown when the input field is not empty
+				return '<span id="suggested_topup_amt_' + i + '">Topup: Rp xxx.xxx,00. Ending Balance: Rp xxx.xxx,00</span>';
+			}
 			
 			$(document).ready(function(){ 
 				var placeholder = "Input current balance here"
@@ -32,20 +169,20 @@
 				generateTotalInput(2)
 				
 				// AKW - Define the default fields
-				addNewInputField(1, placeholder)
-				addNewInputField(2, placeholder)
+				addNewInputRow(1, placeholder)
+				addNewInputRow(2, placeholder)
 			})
 			
-			// AKW - A method to automatically show additional input fields based on the select field user choose
-			function show_input_fields(selectField) {
+			// AKW - A method to automatically show additional input rows based on the select field user choose
+			function show_input_rows(selectField) {
 				// AKW - Define the variables here
 				var total_input = selectField.value
 				var placeholder = "Input current balance here"
 				
 				// AKW - Start from 1, add if it is still less than the expected number
 				for (i = 1; i <= total_input; i++) {
-					if ($("#input_field_" + i).length <= 0) {
-						addNewInputField(i, placeholder);
+					if ($("#input_row_" + i).length <= 0) {
+						addNewInputRow(i, placeholder);
 					}
 				}
 				
@@ -56,9 +193,9 @@
 					for (i = (+total_input + +1); i <= MAX_TOTAL_INPUT; i++) {
 						debug(i)
 						
-						if ($("#input_field_" + i).length > 0) {
-							$("#input_field_" + i).remove()
-							$("#br_field_" + i).remove()
+						if ($("#input_row_" + i).length > 0) {
+							$("#input_row_" + i).remove()
+							$('#input_field_' + i + '').focusout();
 						}
 					}
 				}
@@ -72,15 +209,82 @@
 				$("#debug").append(msg)
 			}
 		</script>
+
+		<style>
+			h1.header {
+				text-align: center;
+			}
+
+			h4.header {
+				text-align: center;
+				font-weight: lighter
+			}
+
+			form.content {
+				text-align: center;
+			}
+
+			form.content, #input_fields {
+				line-height: 30px;
+			}
+
+			.divTable {
+				display: table;
+				width: 100%;
+			}
+			.divTableRow {
+				display: table-row;
+			}
+			.rTableHeading {
+				display: table-header-group;
+				background-color: red;
+			}
+			.divTableCell, .rTableHead {
+				display: table-cell;
+				padding: 3px 10px;
+				border: 1px solid grey;
+			}
+			.rTableHeading {
+				display: table-header-group;
+				background-color: grey;
+				font-weight: bold;
+			}
+			.rTableFoot {
+				display: table-footer-group;
+				font-weight: bold;
+				background-color: grey;
+			}
+			.rTableBody {
+				display: table-row-group;
+			}
+
+
+		</style>
 	</head>
 	<body>
-		<select id="total_inputs" onchange="show_input_fields(this)">
-			<option id="total_input_1" value="1">1</option>
-		</select>
-		<div id="input_fields">
-		</div>
-		<div id="debug">
-		</div>
+		<h1 class="header">AKW KMT Calculator</h1>
+		<h4 class="header">AKW KMT Calculator is a simple calculator that is made by 
+			<a href="mailto:adhityo.k.w@gmail.com">adhityo.k.w@gmail.com</a> 
+			<a href="https://github.com/akwdhit">(@akwdhit)</a> 
+			to define how much each card should be 
+			topped up to have similar amount afterwards.</h4>
+
+		<form class="content">
+			Please specify total cards: 
+			<select id="total_inputs" onchange="show_input_fields(this)">
+				<option id="total_input_1" value="1">1</option>
+			</select>
+
+			<!-- aInspired by: https://html-cleaner.com/features/replace-html-table-tags-with-divs/ -->
+			<div class="divTable" id="input_fields">
+				<div class="divTableRow">
+					<div class="divTableCell">Current Balance on Card</div>
+					<div class="divTableCell">Suggested TopUp Amount</div>
+				</div>
+			</div>
+			<div id="debug">
+			</div>
+		</form>
 		
 		<script>document.write(footer);</script>
 	</body>
