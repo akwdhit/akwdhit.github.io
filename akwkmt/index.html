@@ -159,7 +159,8 @@
 				// TODO:
 				// 1. To make it automatically format the value as a currency
 				// https://codepen.io/559wade/pen/LRzEjj
-				return '<input type="number" id="input_field_' + i + '" placeholder="' + placeholder + '" pattern="^\$\d{1,3}(.\d{3})*(\,\d+)?$" data-type="currency"></input>';
+				// As a number from phone: https://stackoverflow.com/questions/6178556/phone-numeric-keyboard-for-text-input
+				return '<input type="number" id="input_field_' + i + '" placeholder="' + placeholder + '" inputmode="numeric" pattern="^\$\d{1,3}(.\d{3})*(\,\d+)?$" data-type="currency"></input>';
 			}
 
 			function getNewSuggestedTopUpAmount(i, placeholder) {
